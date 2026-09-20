@@ -1,11 +1,12 @@
 # Sacrament Meeting Planner
 
 A Next.js (App Router) application for planning, reviewing, and printing sacrament
-meeting agendas. Built for WDD 430, Week 02.
+meeting agendas, backed by a live PostgreSQL (Neon) database. Built for WDD 430.
 
 ## Features
 
-- Browse every meeting on file, newest first
+- Browse every meeting on file, newest first, five per page
+- Search by speaker, presiding, conducting, or meeting type — all state lives in the URL
 - View a full agenda: announcements, hymns, prayers, ward and stake business,
   speakers, and musical numbers
 - Jump straight to the current Sunday's program via `/meetings/current`
@@ -16,20 +17,39 @@ meeting agendas. Built for WDD 430, Week 02.
 
 ```bash
 npm install
+vercel link          # link to the Vercel project
+vercel env pull .env.local   # writes DATABASE_URL
 npm run dev
 ```
 
 Open <http://localhost:3000>.
+
+`.env.local` holds the database credentials and is covered by `.gitignore` —
+never commit it.
+
+### Database setup
+
+The schema and seed data live in [`db/`](db/):
+
+```bash
+psql "$DATABASE_URL" -f db/schema.sql
+psql "$DATABASE_URL" -f db/seed.sql
+```
+
+`db/seed.sql` inserts 12 meetings across all five meeting types, which gives
+three pages at five per page and enough variety to exercise search.
 
 ## Routes
 
 | Route | Description |
 |---|---|
 | `/` | Landing page with hero image and feature summary |
-| `/meetings` | List of all meetings, rendered as `MeetingCard`s |
+| `/meetings` | Paginated, searchable list (`?query=`, `?page=`) |
+| `/meetings/new` | Create form placeholder (Week 04) |
+| `/meetings/[id]/edit` | Edit form placeholder (Week 04) |
 | `/meetings/[id]` | Full agenda for one meeting, with print control |
 | `/meetings/current` | 307 redirect to the most recent Sunday's meeting |
-| `GET /api/meetings` | All meetings; optional `?date=YYYY-MM-DD` filter |
+| `GET /api/meetings` | All meetings; `?date=`, `?query=`, `?page=` filters |
 | `GET /api/meetings/[id]` | One meeting — `200`, `400` (bad id), or `404` (missing) |
 
 ## Project Structure
@@ -37,33 +57,42 @@ Open <http://localhost:3000>.
 ```
 sacrament-meetings/
 ├── app/
+│   ├── (public)/meetings/
+│   │   ├── layout.tsx             Section layout (breadcrumb)
+│   │   ├── (list)/
+│   │   │   ├── loading.tsx        Route-level loading UI
+│   │   │   └── page.tsx           /meetings — search + pagination
+│   │   ├── [id]/
+│   │   │   ├── page.tsx           /meetings/[id]
+│   │   │   └── not-found.tsx
+│   │   └── current/page.tsx       /meetings/current redirect
+│   ├── (admin)/
+│   │   ├── layout.tsx             Leader-facing layout
+│   │   └── meetings/
+│   │       ├── new/page.tsx       /meetings/new (Week 04)
+│   │       └── [id]/edit/page.tsx /meetings/[id]/edit (Week 04)
 │   ├── api/meetings/
 │   │   ├── route.ts               GET /api/meetings
 │   │   └── [id]/route.ts          GET /api/meetings/[id]
-│   ├── meetings/
-│   │   ├── layout.tsx             Meetings section layout (breadcrumb)
-│   │   ├── (list)/
-│   │   │   ├── loading.tsx        Route-level loading UI
-│   │   │   └── page.tsx           /meetings
-│   │   ├── [id]/
-│   │   │   ├── page.tsx           /meetings/[id]
-│   │   │   └── not-found.tsx      404 view for unknown ids
-│   │   └── current/page.tsx       /meetings/current redirect
-│   ├── globals.css                Design tokens + print styles
-│   ├── layout.tsx                 Root layout, Google fonts, Header/Footer
-│   └── page.tsx                   Landing page
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
 ├── components/
 │   ├── Header.tsx                 Ward name + current date
 │   ├── Footer.tsx
 │   ├── NavLinks.tsx               Client Component, active-link styling
 │   ├── MeetingCard.tsx            Summary card
 │   ├── MeetingDetail.tsx          Full agenda
+│   ├── MeetingSearch.tsx          Client Component, URL-driven search
+│   ├── Pagination.tsx             Client Component, URL-driven paging
 │   └── PrintButton.tsx            Client Component, triggers print
 ├── lib/
 │   ├── types.ts                   TypeScript interfaces
-│   ├── meetings-db.ts             Temporary in-memory data
-│   ├── api.ts                     Server-side fetch helpers
-│   └── format.ts                  Date formatting
+│   ├── meetings-db.ts             Neon PostgreSQL queries
+│   └── format.ts                  Date helpers
+├── db/
+│   ├── schema.sql                 meetings table definition
+│   └── seed.sql                   12 seed records
 └── public/chapel-hero.jpg
 ```
 
@@ -84,9 +113,15 @@ unknown meeting ids return a real 404. Both were verified with `curl`.
 
 ### Data note
 
-`lib/meetings-db.ts` is temporary in-memory data. Three records use fixed dates
-as a small archive; the rest are anchored to the current week so
-`/meetings/current` resolves to a real meeting whenever the app is opened.
+`lib/meetings-db.ts` now queries a live Neon PostgreSQL database. The Neon
+client is created lazily on first query rather than at module load, so
+`next build` succeeds on a machine without `DATABASE_URL` set — every page that
+queries is dynamic, so nothing needs the database at build time.
+
+Nested fields (hymns, speakers, ward business) are stored as `JSONB` and
+announcements as `TEXT[]`. Columns are aliased in SQL (`meeting_type AS
+"meetingType"`) so rows map straight onto the `SacramentMeeting` interface with
+no transformation layer.
 
 ## Quality Checks
 

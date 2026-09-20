@@ -12,6 +12,7 @@ const TYPE_BADGE: Record<SacramentMeeting['meetingType'], string> = {
   testimony: 'bg-emerald-100 text-emerald-900',
   stake: 'bg-amber-100 text-amber-900',
   general: 'bg-violet-100 text-violet-900',
+  special: 'bg-rose-100 text-rose-900',
 };
 
 export default function MeetingCard({ meeting }: MeetingCardProps) {

@@ -1,0 +1,120 @@
+-- Seed data for the Sacrament Meeting Planner.
+-- 12 records across all five meeting types, giving 3 pages at 5 per page.
+-- Non-sacrament meetings (stake/general) use {"number":0,"title":""} for hymns
+-- they do not have: the JSONB columns are NOT NULL, so an empty string is not
+-- valid input and would raise "invalid input syntax for type json".
+
+TRUNCATE TABLE meetings RESTART IDENTITY;
+
+INSERT INTO meetings (
+  date, meeting_type, presiding, conducting, announcements,
+  opening_hymn, opening_prayer, ward_business, stake_business,
+  sacrament_hymn, speakers, closing_hymn, closing_prayer
+) VALUES
+('2026-01-04','testimony','Bishop Thompson','Brother Nakamura',
+ ARRAY['Fast offerings collected after the meeting'],
+ '{"number":134,"title":"I Believe in Christ"}','Sister Park',
+ '[]'::jsonb, false,
+ '{"number":175,"title":"God, Our Father, Hear Us Pray"}',
+ '[]'::jsonb,
+ '{"number":219,"title":"Because I Have Been Given Much"}','Brother Alvarez'),
+
+('2026-01-11','regular','Bishop Thompson','Brother Nakamura',
+ ARRAY['Ward temple night: Jan 30'],
+ '{"number":2,"title":"The Spirit of God"}','Sister Ramirez',
+ '[{"description":"Sustaining of new Sunday School president"}]'::jsonb, true,
+ '{"number":169,"title":"In Remembrance of Thy Suffering"}',
+ '[{"name":"Sister Chen","topic":"The Sacrament","type":"speaker"},
+   {"name":"Brother Osei","topic":"Covenant Keeping","type":"speaker"}]'::jsonb,
+ '{"number":31,"title":"O God, Our Help in Ages Past"}','Brother Lewis'),
+
+('2026-01-18','regular','Bishop Thompson','Sister Torres',
+ ARRAY['Ministering interviews this week'],
+ '{"number":85,"title":"How Firm a Foundation"}','Brother Kim',
+ '[{"description":"Release - Sister Martinez - Primary Teacher"},
+   {"description":"Sustain - Sister Agbavor - Primary Teacher"}]'::jsonb, false,
+ '{"number":173,"title":"While of These Emblems We Partake"}',
+ '[{"name":"Sister Nakamura","topic":"Personal Revelation","type":"speaker"},
+   {"name":"Youth Choir","topic":"Come, Thou Fount","type":"musical-number"},
+   {"name":"Brother Santos","topic":"Temple Covenants","type":"speaker"}]'::jsonb,
+ '{"number":226,"title":"Improve the Shining Moments"}','Sister Jensen'),
+
+('2026-01-25','stake','President Gimenez','President Gimenez',
+ ARRAY['Stake conference is held at the stake center'],
+ '{"number":19,"title":"We Thank Thee, O God, for a Prophet"}','Brother Weston',
+ '[]'::jsonb, true,
+ '{"number":0,"title":""}',
+ '[{"name":"President Gimenez","topic":"Building Zion","type":"speaker"},
+   {"name":"Stake Choir","topic":"Redeemer of Israel","type":"musical-number"}]'::jsonb,
+ '{"number":30,"title":"Come, Come, Ye Saints"}','Sister Gimenez'),
+
+('2026-02-01','general','First Presidency','First Presidency',
+ ARRAY['General conference broadcast - no local meetings'],
+ '{"number":3,"title":"Now Let Us Rejoice"}','Elder Nielsen',
+ '[]'::jsonb, false,
+ '{"number":0,"title":""}',
+ '[{"name":"Elder Nielsen","topic":"The Doctrine of Christ","type":"speaker"},
+   {"name":"Tabernacle Choir","topic":"Redeemer of Israel","type":"musical-number"}]'::jsonb,
+ '{"number":62,"title":"All Creatures of Our God and King"}','Elder Gray'),
+
+('2026-02-08','regular','Bishop Smith','Brother Nakamura',
+ ARRAY['Ward council Tuesday at 7:00 PM'],
+ '{"number":66,"title":"Rejoice, the Lord Is King!"}','Sister Lowe',
+ '[{"description":"Sustaining of Brother Ellis as ward clerk"}]'::jsonb, false,
+ '{"number":177,"title":"God Loved Us, So He Sent His Son"}',
+ '[{"name":"Sister Smith","topic":"Keeping Covenants","type":"speaker"},
+   {"name":"Brother Bennett","topic":"The Gift of the Holy Ghost","type":"speaker"}]'::jsonb,
+ '{"number":223,"title":"Have I Done Any Good?"}','Brother Price'),
+
+('2026-03-01','testimony','Bishop Smith','Sister Torres',
+ ARRAY['Fast offerings collected by the deacons quorum'],
+ '{"number":140,"title":"Did You Think to Pray?"}','Brother Parker',
+ '[{"description":"Confirmation of Sister Eliza Moore"}]'::jsonb, false,
+ '{"number":174,"title":"While of These Emblems We Partake"}',
+ '[]'::jsonb,
+ '{"number":152,"title":"God Be with You Till We Meet Again"}','Sister Fischer'),
+
+('2026-03-08','special','Bishop Smith','Brother Nakamura',
+ ARRAY['Ward conference - stake presidency attending'],
+ '{"number":6,"title":"Redeemer of Israel"}','Brother Adeyemi',
+ '[{"description":"Annual ward report"}]'::jsonb, true,
+ '{"number":172,"title":"In Humility, Our Savior"}',
+ '[{"name":"President Gimenez","topic":"Ward Conference Address","type":"speaker"},
+   {"name":"Primary Children","topic":"I Am a Child of God","type":"musical-number"}]'::jsonb,
+ '{"number":27,"title":"Praise to the Man"}','Sister Kimball'),
+
+('2026-09-06','regular','Bishop Smith','Brother Nakamura',
+ ARRAY['Primary program rehearsal follows the block'],
+ '{"number":100,"title":"Nearer, Dear Savior, to Thee"}','Sister Mensah',
+ '[]'::jsonb, false,
+ '{"number":181,"title":"Jesus of Nazareth, Savior and King"}',
+ '[{"name":"Sister Owens","topic":"Temple Worship","type":"speaker"},
+   {"name":"Brother Tanner","topic":"Missionary Work","type":"speaker"}]'::jsonb,
+ '{"number":301,"title":"I Am a Child of God"}','Brother Osei'),
+
+('2026-09-13','testimony','Bishop Smith','Sister Torres',
+ ARRAY['Ward temple night Thursday at 6:30 PM'],
+ '{"number":134,"title":"I Believe in Christ"}','Brother Nkemelu',
+ '[{"description":"Sustaining of Brother Alewi as elders quorum instructor"}]'::jsonb, false,
+ '{"number":169,"title":"In Remembrance of Thy Suffering"}',
+ '[]'::jsonb,
+ '{"number":27,"title":"Praise to the Man"}','Sister Barnes'),
+
+('2026-09-20','regular','Bishop Smith','Brother Nakamura',
+ ARRAY['Ward conference next Sunday','Service project Saturday morning'],
+ '{"number":2,"title":"The Spirit of God"}','Sister Clara Mensah',
+ '[{"description":"Release of Sister Grant from Young Women presidency"}]'::jsonb, false,
+ '{"number":173,"title":"While of These Emblems We Partake"}',
+ '[{"name":"Brother Ferrell","topic":"The Sabbath Day","type":"speaker"},
+   {"name":"Ward Choir","topic":"Nearer, My God, to Thee","type":"musical-number"},
+   {"name":"Sister Stone","topic":"Hope in Christ","type":"speaker"}]'::jsonb,
+ '{"number":152,"title":"God Be with You Till We Meet Again"}','Brother Daniel Osei'),
+
+('2026-09-27','regular','Bishop Smith','Sister Torres',
+ ARRAY['Ward conference today - all auxiliaries meet together'],
+ '{"number":19,"title":"We Thank Thee, O God, for a Prophet"}','Brother Kim',
+ '[]'::jsonb, true,
+ '{"number":175,"title":"God, Our Father, Hear Us Pray"}',
+ '[{"name":"Sister Abigail Stone","topic":"Charity Never Faileth","type":"speaker"},
+   {"name":"Brother Micah Ferrell","topic":"Enduring to the End","type":"speaker"}]'::jsonb,
+ '{"number":219,"title":"Because I Have Been Given Much"}','Sister Jensen');

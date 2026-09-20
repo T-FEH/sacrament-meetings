@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import NavLinks from './NavLinks';
-import { formatMeetingDate } from '@/lib/format';
-import { getCurrentSunday } from '@/lib/meetings-db';
+import { formatMeetingDate, getCurrentSunday } from '@/lib/format';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
