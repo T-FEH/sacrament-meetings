@@ -118,6 +118,12 @@ client is created lazily on first query rather than at module load, so
 `next build` succeeds on a machine without `DATABASE_URL` set — every page that
 queries is dynamic, so nothing needs the database at build time.
 
+**Known limitation:** "today" and "the current Sunday" are computed in the
+server's timezone, which is UTC on Vercel. A ward several hours behind UTC will
+see the date roll over before local midnight. Fixing this properly means
+storing a ward timezone and resolving dates against it, which is out of scope
+for this week.
+
 Nested fields (hymns, speakers, ward business) are stored as `JSONB` and
 announcements as `TEXT[]`. Columns are aliased in SQL (`meeting_type AS
 "meetingType"`) so rows map straight onto the `SacramentMeeting` interface with
