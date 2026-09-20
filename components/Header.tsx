@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import NavLinks from './NavLinks';
-import { formatMeetingDate, getCurrentSunday } from '@/lib/format';
+import { formatMeetingDate, getToday } from '@/lib/format';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -13,7 +13,7 @@ interface HeaderProps {
 }
 
 export default function Header({ wardName = 'Maple Hills Ward' }: HeaderProps) {
-  const today = getCurrentSunday();
+  const today = getToday();
 
   return (
     <header className="bg-slate-800 text-white">

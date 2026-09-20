@@ -25,6 +25,14 @@ export const metadata: Metadata = {
     'Plan, review, and print sacrament meeting agendas including hymns, prayers, ward business, speakers, and musical numbers.',
 };
 
+/**
+ * The Header shows today's date, which is request-time data. Without this the
+ * landing page would prerender at build time and keep serving the build date
+ * for as long as the deployment lives. Every page that queries the database is
+ * already dynamic, so this costs almost nothing.
+ */
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({
   children,
 }: Readonly<{

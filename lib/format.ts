@@ -35,6 +35,11 @@ function toIsoDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+/** Today's date as 'YYYY-MM-DD' in local time. */
+export function getToday(): string {
+  return toIsoDate(new Date());
+}
+
 /**
  * The most recent Sunday (today, when today is Sunday).
  * Lives here rather than in meetings-db so components that only need the date
