@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MeetingDetail from '@/components/MeetingDetail';
 import PrintButton from '@/components/PrintButton';
+import DeleteMeetingButton from '@/components/DeleteMeetingButton';
 import { getMeetingById } from '@/lib/meetings-db';
 import { formatShortDate } from '@/lib/format';
 
@@ -45,6 +46,7 @@ export default async function MeetingPage({ params }: MeetingPageProps) {
           >
             Edit
           </Link>
+          <DeleteMeetingButton id={meeting.id} label={formatShortDate(meeting.date)} />
           <PrintButton />
         </div>
       </div>

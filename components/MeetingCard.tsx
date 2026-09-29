@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import DeleteMeetingButton from './DeleteMeetingButton';
 import type { SacramentMeeting } from '@/lib/types';
 import { MEETING_TYPE_LABELS } from '@/lib/types';
 import { formatShortDate } from '@/lib/format';
@@ -52,7 +53,7 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
         {meeting.stakeBusiness && ' · Stake business'}
       </p>
 
-      <p className="mt-4">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
         <Link
           href={`/meetings/${meeting.id}`}
           className="text-sm font-semibold text-sky-800 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
@@ -61,7 +62,14 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
           <span className="sr-only"> for {formatShortDate(meeting.date)}</span>
           <span aria-hidden="true"> &rarr;</span>
         </Link>
-      </p>
+        <Link
+          href={`/meetings/${meeting.id}/edit`}
+          className="text-sm font-semibold text-slate-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
+        >
+          Edit<span className="sr-only"> meeting for {formatShortDate(meeting.date)}</span>
+        </Link>
+        <DeleteMeetingButton id={meeting.id} label={formatShortDate(meeting.date)} />
+      </div>
     </article>
   );
 }

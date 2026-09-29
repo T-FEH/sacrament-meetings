@@ -135,21 +135,99 @@ export async function getMeetingById(id: number): Promise<SacramentMeeting | nul
   return rows[0] ?? null;
 }
 
-// Mutation stubs — wired to the database in Week 04.
+/**
+ * Maps SacramentMeeting properties to their columns, and marks which ones are
+ * stored as JSONB so the value is stringified and cast. The keys of this map
+ * are the only column names ever interpolated into SQL — values always travel
+ * as bound parameters.
+ */
+const COLUMN_MAP: Record<keyof Omit<SacramentMeeting, 'id'>, { column: string; json?: boolean }> = {
+  date: { column: 'date' },
+  meetingType: { column: 'meeting_type' },
+  presiding: { column: 'presiding' },
+  conducting: { column: 'conducting' },
+  announcements: { column: 'announcements' },
+  openingHymn: { column: 'opening_hymn', json: true },
+  openingPrayer: { column: 'opening_prayer' },
+  wardBusiness: { column: 'ward_business', json: true },
+  stakeBusiness: { column: 'stake_business' },
+  sacramentHymn: { column: 'sacrament_hymn', json: true },
+  speakers: { column: 'speakers', json: true },
+  closingHymn: { column: 'closing_hymn', json: true },
+  closingPrayer: { column: 'closing_prayer' },
+};
 
-export async function addMeeting(
-  _data: Omit<SacramentMeeting, 'id'>
-): Promise<SacramentMeeting> {
-  throw new Error('addMeeting: database implementation coming in Week 04');
+type MeetingInput = Omit<SacramentMeeting, 'id'>;
+
+/** Thrown when a meeting already exists for the requested date. */
+export class DuplicateMeetingDateError extends Error {
+  constructor(date: string) {
+    super(`A meeting already exists for ${date}.`);
+    this.name = 'DuplicateMeetingDateError';
+  }
 }
 
+function isUniqueViolation(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === '23505';
+}
+
+function toParam(key: keyof MeetingInput, value: unknown): unknown {
+  return COLUMN_MAP[key].json ? JSON.stringify(value) : value;
+}
+
+/** Inserts a meeting and returns the stored row. */
+export async function addMeeting(data: MeetingInput): Promise<SacramentMeeting> {
+  const keys = Object.keys(COLUMN_MAP) as (keyof MeetingInput)[];
+  const columns = keys.map((k) => COLUMN_MAP[k].column).join(', ');
+  const placeholders = keys
+    .map((k, i) => (COLUMN_MAP[k].json ? `$${i + 1}::jsonb` : `$${i + 1}`))
+    .join(', ');
+  const params = keys.map((k) => toParam(k, data[k]));
+
+  try {
+    const rows = await queryRows<SacramentMeeting>(
+      `INSERT INTO meetings (${columns}) VALUES (${placeholders}) RETURNING ${MEETING_COLUMNS}`,
+      params
+    );
+    return rows[0];
+  } catch (error) {
+    if (isUniqueViolation(error)) throw new DuplicateMeetingDateError(data.date);
+    throw error;
+  }
+}
+
+/** Updates the supplied fields and returns the row, or null when the id is unknown. */
 export async function updateMeeting(
-  _id: number,
-  _updates: Partial<SacramentMeeting>
+  id: number,
+  updates: Partial<MeetingInput>
 ): Promise<SacramentMeeting | null> {
-  throw new Error('updateMeeting: database implementation coming in Week 04');
+  const keys = (Object.keys(updates) as (keyof MeetingInput)[]).filter(
+    (k) => k in COLUMN_MAP && updates[k] !== undefined
+  );
+
+  if (keys.length === 0) return getMeetingById(id);
+
+  const assignments = keys
+    .map((k, i) => `${COLUMN_MAP[k].column} = $${i + 1}${COLUMN_MAP[k].json ? '::jsonb' : ''}`)
+    .join(', ');
+  const params = [...keys.map((k) => toParam(k, updates[k])), id];
+
+  try {
+    const rows = await queryRows<SacramentMeeting>(
+      `UPDATE meetings SET ${assignments} WHERE id = $${keys.length + 1} RETURNING ${MEETING_COLUMNS}`,
+      params
+    );
+    return rows[0] ?? null;
+  } catch (error) {
+    if (isUniqueViolation(error) && updates.date) throw new DuplicateMeetingDateError(updates.date);
+    throw error;
+  }
 }
 
-export async function deleteMeeting(_id: number): Promise<boolean> {
-  throw new Error('deleteMeeting: database implementation coming in Week 04');
+/** Deletes a meeting, returning false when no row matched. */
+export async function deleteMeeting(id: number): Promise<boolean> {
+  const rows = await queryRows<{ id: number }>('DELETE FROM meetings WHERE id = $1 RETURNING id', [
+    id,
+  ]);
+  return rows.length > 0;
 }

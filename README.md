@@ -10,6 +10,8 @@ meeting agendas, backed by a live PostgreSQL (Neon) database. Built for WDD 430.
 - View a full agenda: announcements, hymns, prayers, ward and stake business,
   speakers, and musical numbers
 - Jump straight to the current Sunday's program via `/meetings/current`
+- Create, edit, and delete meetings through Server Actions with server-side
+  Zod validation and accessible, field-level error messages
 - Print-friendly program view (navigation chrome is hidden when printing)
 - Typed API routes backing every page
 
@@ -45,8 +47,8 @@ three pages at five per page and enough variety to exercise search.
 |---|---|
 | `/` | Landing page with hero image and feature summary |
 | `/meetings` | Paginated, searchable list (`?query=`, `?page=`) |
-| `/meetings/new` | Create form placeholder (Week 04) |
-| `/meetings/[id]/edit` | Edit form placeholder (Week 04) |
+| `/meetings/new` | Create form (Server Action + Zod validation) |
+| `/meetings/[id]/edit` | Edit form; `notFound()` for unknown ids |
 | `/meetings/[id]` | Full agenda for one meeting, with print control |
 | `/meetings/current` | 307 redirect to the most recent Sunday's meeting |
 | `GET /api/meetings` | All meetings; `?date=`, `?query=`, `?page=` filters |
@@ -62,15 +64,19 @@ sacrament-meetings/
 │   │   ├── (list)/
 │   │   │   ├── loading.tsx        Route-level loading UI
 │   │   │   └── page.tsx           /meetings — search + pagination
+│   │   ├── error.tsx              Error boundary for meetings routes
 │   │   ├── [id]/
 │   │   │   ├── page.tsx           /meetings/[id]
 │   │   │   └── not-found.tsx
 │   │   └── current/page.tsx       /meetings/current redirect
 │   ├── (admin)/
 │   │   ├── layout.tsx             Leader-facing layout
+│   │   ├── error.tsx              Error boundary for admin routes
 │   │   └── meetings/
-│   │       ├── new/page.tsx       /meetings/new (Week 04)
-│   │       └── [id]/edit/page.tsx /meetings/[id]/edit (Week 04)
+│   │       ├── new/page.tsx       Create form
+│   │       └── [id]/edit/
+│   │           ├── page.tsx       Edit form
+│   │           └── not-found.tsx  Unknown meeting id
 │   ├── api/meetings/
 │   │   ├── route.ts               GET /api/meetings
 │   │   └── [id]/route.ts          GET /api/meetings/[id]
@@ -83,12 +89,16 @@ sacrament-meetings/
 │   ├── NavLinks.tsx               Client Component, active-link styling
 │   ├── MeetingCard.tsx            Summary card
 │   ├── MeetingDetail.tsx          Full agenda
+│   ├── MeetingForm.tsx            Client form, useActionState + a11y errors
+│   ├── DeleteMeetingButton.tsx    Client form posting to deleteMeeting
 │   ├── MeetingSearch.tsx          Client Component, URL-driven search
 │   ├── Pagination.tsx             Client Component, URL-driven paging
 │   └── PrintButton.tsx            Client Component, triggers print
 ├── lib/
 │   ├── types.ts                   TypeScript interfaces
-│   ├── meetings-db.ts             Neon PostgreSQL queries
+│   ├── meetings-db.ts             Neon PostgreSQL queries + mutations
+│   ├── actions.ts                 Server Actions ('use server')
+│   ├── form-state.ts              Shared form state shape
 │   └── format.ts                  Date helpers
 ├── db/
 │   ├── schema.sql                 meetings table definition
@@ -117,6 +127,24 @@ unknown meeting ids return a real 404. Both were verified with `curl`.
 client is created lazily on first query rather than at module load, so
 `next build` succeeds on a machine without `DATABASE_URL` set — every page that
 queries is dynamic, so nothing needs the database at build time.
+
+### Why the form state lives outside `lib/actions.ts`
+
+A `'use server'` module may only export async functions. Exporting the
+`emptyMeetingFormState` constant from `lib/actions.ts` fails the build with
+*"A 'use server' file can only export async functions, found object"*, so the
+state interface and its initial value live in `lib/form-state.ts`.
+
+### Forms and validation
+
+The create and edit pages stay Server Components so they can fetch the record
+and call `notFound()`; `components/MeetingForm.tsx` is the Client Component that
+calls `useActionState` and renders the returned errors. Every input has a
+matching `<label htmlFor>`, an `aria-describedby` pointing at its error
+container, and `aria-invalid` when that field failed. Each error container is
+`aria-live="polite"` so screen readers announce validation changes. A duplicate
+meeting date is caught as a Postgres unique violation (`23505`) and returned as
+a field error rather than an unhandled exception.
 
 **Known limitation:** "today" and "the current Sunday" are computed in the
 server's timezone, which is UTC on Vercel. A ward several hours behind UTC will
