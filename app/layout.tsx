@@ -3,6 +3,7 @@ import { Playfair_Display, Source_Sans_3 } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { ogImage, siteDescription, siteName, siteUrl } from '@/lib/site';
 
 const sourceSans = Source_Sans_3({
   variable: '--font-source-sans',
@@ -16,28 +17,14 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
-/**
- * Absolute base for Open Graph and canonical URLs. Social crawlers will not
- * resolve relative image paths, so metadataBase must be set for the
- * app/opengraph-image.png convention to produce a usable absolute URL.
- */
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-  ? process.env.NEXT_PUBLIC_SITE_URL
-  : process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000';
-
-const siteDescription =
-  'Plan, review, and print sacrament meeting agendas including hymns, prayers, ward business, speakers, and musical numbers.';
-
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Sacrament Meeting Planner',
-    template: '%s | Sacrament Meeting Planner',
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
   description: siteDescription,
-  applicationName: 'Sacrament Meeting Planner',
+  applicationName: siteName,
   keywords: [
     'sacrament meeting',
     'ward bulletin',
@@ -50,16 +37,18 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
-    siteName: 'Sacrament Meeting Planner',
-    title: 'Sacrament Meeting Planner',
+    siteName,
+    title: siteName,
     description: siteDescription,
     url: siteUrl,
     locale: 'en_US',
+    images: [ogImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sacrament Meeting Planner',
+    title: siteName,
     description: siteDescription,
+    images: [ogImage.url],
   },
 };
 

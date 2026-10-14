@@ -5,6 +5,7 @@ import MeetingSearch from '@/components/MeetingSearch';
 import Pagination from '@/components/Pagination';
 import { getMeetings, getMeetingsTotalPages } from '@/lib/meetings-db';
 import { auth } from '@/auth';
+import { ogImage } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'All Meetings',
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
       'Browse and search every sacrament meeting agenda, including hymns, prayers, speakers, and ward business.',
     url: '/meetings',
     type: 'website',
+    images: [ogImage],
   },
 };
 

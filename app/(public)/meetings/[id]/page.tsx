@@ -7,6 +7,7 @@ import DeleteMeetingButton from '@/components/DeleteMeetingButton';
 import { getMeetingById } from '@/lib/meetings-db';
 import { formatShortDate } from '@/lib/format';
 import { MEETING_TYPE_LABELS } from '@/lib/types';
+import { ogImage } from '@/lib/site';
 import { auth } from '@/auth';
 
 interface MeetingPageProps {
@@ -45,6 +46,7 @@ export async function generateMetadata({ params }: MeetingPageProps): Promise<Me
       description,
       url: `/meetings/${meeting.id}`,
       type: 'article',
+      images: [ogImage],
     },
   };
 }
