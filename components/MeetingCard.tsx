@@ -6,6 +6,8 @@ import { formatShortDate } from '@/lib/format';
 
 interface MeetingCardProps {
   meeting: SacramentMeeting;
+  /** Signed-in bishopric members get the edit and delete controls. */
+  canManage?: boolean;
 }
 
 const TYPE_BADGE: Record<SacramentMeeting['meetingType'], string> = {
@@ -16,7 +18,7 @@ const TYPE_BADGE: Record<SacramentMeeting['meetingType'], string> = {
   special: 'bg-rose-100 text-rose-900',
 };
 
-export default function MeetingCard({ meeting }: MeetingCardProps) {
+export default function MeetingCard({ meeting, canManage = false }: MeetingCardProps) {
   const speakerCount = meeting.speakers.filter((s) => s.type === 'speaker').length;
   const musicalCount = meeting.speakers.filter((s) => s.type === 'musical-number').length;
 
@@ -62,13 +64,17 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
           <span className="sr-only"> for {formatShortDate(meeting.date)}</span>
           <span aria-hidden="true"> &rarr;</span>
         </Link>
-        <Link
-          href={`/meetings/${meeting.id}/edit`}
-          className="text-sm font-semibold text-slate-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-        >
-          Edit<span className="sr-only"> meeting for {formatShortDate(meeting.date)}</span>
-        </Link>
-        <DeleteMeetingButton id={meeting.id} label={formatShortDate(meeting.date)} />
+        {canManage && (
+          <>
+            <Link
+              href={`/meetings/${meeting.id}/edit`}
+              className="text-sm font-semibold text-slate-700 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
+            >
+              Edit<span className="sr-only"> meeting for {formatShortDate(meeting.date)}</span>
+            </Link>
+            <DeleteMeetingButton id={meeting.id} label={formatShortDate(meeting.date)} />
+          </>
+        )}
       </div>
     </article>
   );

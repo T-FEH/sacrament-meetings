@@ -12,6 +12,7 @@ meeting agendas, backed by a live PostgreSQL (Neon) database. Built for WDD 430.
 - Jump straight to the current Sunday's program via `/meetings/current`
 - Create, edit, and delete meetings through Server Actions with server-side
   Zod validation and accessible, field-level error messages
+- Bishopric sign-in (Auth.js credentials) protecting the create and edit routes
 - Print-friendly program view (navigation chrome is hidden when printing)
 - Typed API routes backing every page
 
@@ -28,6 +29,36 @@ Open <http://localhost:3000>.
 
 `.env.local` holds the database credentials and is covered by `.gitignore` —
 never commit it.
+
+### Authentication
+
+Sign-in uses Auth.js (`next-auth@beta`) with a credentials provider backed by a
+`users` table; passwords are stored as bcrypt hashes. Create the table and the
+demo account with:
+
+```bash
+psql "$DATABASE_URL" -f db/users.sql
+```
+
+A local `AUTH_SECRET` is also required:
+
+```bash
+openssl rand -base64 32    # add to .env.local as AUTH_SECRET
+```
+
+**Demo account:** `bishop@maplehills.test` / `Sacrament2026!`
+
+`/meetings/new` and `/meetings/[id]/edit` are protected. Signed-out visitors are
+redirected to `/login` with a `callbackUrl` and returned to the page they asked
+for after signing in. Everything members need — browsing, searching, viewing and
+printing programs — stays public.
+
+**Route protection is not only middleware.** A Server Action is a POST to
+whichever route rendered it, so the delete form on `/meetings` would satisfy a
+middleware check for `/meetings` even though it mutates data. Every mutation in
+`lib/actions.ts` therefore calls `requireUser()` and re-checks the session on the
+server. This was verified by replaying a captured action POST with no session
+cookie: it fails and the record survives.
 
 ### Database setup
 
@@ -47,8 +78,9 @@ three pages at five per page and enough variety to exercise search.
 |---|---|
 | `/` | Landing page with hero image and feature summary |
 | `/meetings` | Paginated, searchable list (`?query=`, `?page=`) |
-| `/meetings/new` | Create form (Server Action + Zod validation) |
-| `/meetings/[id]/edit` | Edit form; `notFound()` for unknown ids |
+| `/meetings/new` | **Protected.** Create form (Server Action + Zod validation) |
+| `/meetings/[id]/edit` | **Protected.** Edit form; `notFound()` for unknown ids |
+| `/login` | Bishopric sign-in |
 | `/meetings/[id]` | Full agenda for one meeting, with print control |
 | `/meetings/current` | 307 redirect to the most recent Sunday's meeting |
 | `GET /api/meetings` | All meetings; `?date=`, `?query=`, `?page=` filters |
@@ -80,8 +112,11 @@ sacrament-meetings/
 │   ├── api/meetings/
 │   │   ├── route.ts               GET /api/meetings
 │   │   └── [id]/route.ts          GET /api/meetings/[id]
+│   ├── api/auth/[...nextauth]/route.ts  Auth.js handlers
+│   ├── login/page.tsx             Bishopric sign-in
+│   ├── opengraph-image.png        Social preview (1200x630)
 │   ├── globals.css
-│   ├── layout.tsx
+│   ├── layout.tsx                 Root metadata + layout
 │   └── page.tsx
 ├── components/
 │   ├── Header.tsx                 Ward name + current date
@@ -100,9 +135,13 @@ sacrament-meetings/
 │   ├── actions.ts                 Server Actions ('use server')
 │   ├── form-state.ts              Shared form state shape
 │   └── format.ts                  Date helpers
+├── auth.ts                        Auth.js + credentials provider
+├── auth.config.ts                 Edge-safe config (route rules)
+├── middleware.ts                  Route protection
 ├── db/
 │   ├── schema.sql                 meetings table definition
-│   └── seed.sql                   12 seed records
+│   ├── seed.sql                   15 seed records
+│   └── users.sql                  users table + demo account
 └── public/chapel-hero.jpg
 ```
 
@@ -156,6 +195,20 @@ Nested fields (hymns, speakers, ward business) are stored as `JSONB` and
 announcements as `TEXT[]`. Columns are aliased in SQL (`meeting_type AS
 "meetingType"`) so rows map straight onto the `SacramentMeeting` interface with
 no transformation layer.
+
+## Metadata
+
+The root layout sets `metadataBase`, a title template, a default description,
+keywords, canonical URL, and Open Graph plus Twitter card defaults.
+`app/opengraph-image.png` (1200x630) is picked up automatically by Next.js and
+resolved to an absolute URL through `metadataBase` — social crawlers will not
+follow a relative image path.
+
+Route-specific metadata overrides those defaults on `/meetings` (custom title,
+description, canonical) and on `/meetings/[id]`, where `generateMetadata` builds
+a description from the actual meeting — its type, date, presiding leader, and
+speaker names — and sets `og:type` to `article`. `/login` is marked
+`robots: { index: false }` since there is nothing for search engines there.
 
 ## Quality Checks
 

@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import NavLinks from './NavLinks';
+import SignOutButton from './SignOutButton';
+import { auth } from '@/auth';
 import { formatMeetingDate, getToday } from '@/lib/format';
 
 const NAV_LINKS = [
@@ -12,8 +14,9 @@ interface HeaderProps {
   wardName?: string;
 }
 
-export default function Header({ wardName = 'Maple Hills Ward' }: HeaderProps) {
+export default async function Header({ wardName = 'Maple Hills Ward' }: HeaderProps) {
   const today = getToday();
+  const session = await auth();
 
   return (
     <header className="bg-slate-800 text-white">
@@ -27,9 +30,28 @@ export default function Header({ wardName = 'Maple Hills Ward' }: HeaderProps) {
             <time dateTime={today}>{formatMeetingDate(today)}</time>
           </p>
         </div>
-        <nav aria-label="Main navigation">
-          <NavLinks links={NAV_LINKS} />
-        </nav>
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+          <nav aria-label="Main navigation">
+            <NavLinks links={NAV_LINKS} />
+          </nav>
+
+          {session?.user ? (
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-slate-200">
+                <span className="sr-only">Signed in as </span>
+                {session.user.name ?? session.user.email}
+              </p>
+              <SignOutButton />
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Sign in
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

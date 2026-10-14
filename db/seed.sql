@@ -117,4 +117,31 @@ INSERT INTO meetings (
  '{"number":175,"title":"God, Our Father, Hear Us Pray"}',
  '[{"name":"Sister Abigail Stone","topic":"Charity Never Faileth","type":"speaker"},
    {"name":"Brother Micah Ferrell","topic":"Enduring to the End","type":"speaker"}]'::jsonb,
- '{"number":219,"title":"Because I Have Been Given Much"}','Sister Jensen');
+ '{"number":219,"title":"Because I Have Been Given Much"}','Sister Jensen'),
+
+('2026-10-04','testimony','Bishop Smith','Brother Nakamura',
+ ARRAY['Fast offerings collected by the deacons quorum'],
+ '{"number":140,"title":"Did You Think to Pray?"}','Sister Park',
+ '[]'::jsonb, false,
+ '{"number":174,"title":"While of These Emblems We Partake"}',
+ '[]'::jsonb,
+ '{"number":152,"title":"God Be with You Till We Meet Again"}','Brother Alvarez'),
+
+('2026-10-11','regular','Bishop Smith','Sister Torres',
+ ARRAY['Ward temple night Thursday at 6:30 PM','Primary program next month'],
+ '{"number":2,"title":"The Spirit of God"}','Brother Kim',
+ '[{"description":"Sustaining of Sister Agbavor as Relief Society secretary"}]'::jsonb, false,
+ '{"number":169,"title":"In Remembrance of Thy Suffering"}',
+ '[{"name":"Sister Chen","topic":"Walking by Faith","type":"speaker"},
+   {"name":"Ward Choir","topic":"Come, Thou Fount of Every Blessing","type":"musical-number"},
+   {"name":"Brother Osei","topic":"Service and Discipleship","type":"speaker"}]'::jsonb,
+ '{"number":223,"title":"Have I Done Any Good?"}','Sister Jensen'),
+
+('2026-10-18','regular','Bishop Smith','Brother Nakamura',
+ ARRAY['Ward council Tuesday at 7:00 PM'],
+ '{"number":19,"title":"We Thank Thee, O God, for a Prophet"}','Sister Mensah',
+ '[]'::jsonb, true,
+ '{"number":173,"title":"While of These Emblems We Partake"}',
+ '[{"name":"Brother Santos","topic":"Temple Covenants","type":"speaker"},
+   {"name":"Sister Nakamura","topic":"Personal Revelation","type":"speaker"}]'::jsonb,
+ '{"number":219,"title":"Because I Have Been Given Much"}','Brother Lewis');

@@ -16,13 +16,51 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
+/**
+ * Absolute base for Open Graph and canonical URLs. Social crawlers will not
+ * resolve relative image paths, so metadataBase must be set for the
+ * app/opengraph-image.png convention to produce a usable absolute URL.
+ */
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? process.env.NEXT_PUBLIC_SITE_URL
+  : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
+
+const siteDescription =
+  'Plan, review, and print sacrament meeting agendas including hymns, prayers, ward business, speakers, and musical numbers.';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'Sacrament Meeting Planner',
     template: '%s | Sacrament Meeting Planner',
   },
-  description:
-    'Plan, review, and print sacrament meeting agendas including hymns, prayers, ward business, speakers, and musical numbers.',
+  description: siteDescription,
+  applicationName: 'Sacrament Meeting Planner',
+  keywords: [
+    'sacrament meeting',
+    'ward bulletin',
+    'meeting agenda',
+    'hymns',
+    'bishopric',
+    'program',
+  ],
+  authors: [{ name: 'Boluwatife Alewi' }],
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    siteName: 'Sacrament Meeting Planner',
+    title: 'Sacrament Meeting Planner',
+    description: siteDescription,
+    url: siteUrl,
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sacrament Meeting Planner',
+    description: siteDescription,
+  },
 };
 
 /**

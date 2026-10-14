@@ -10,6 +10,7 @@ import {
   updateMeeting as updateMeetingRecord,
 } from './meetings-db';
 import type { MeetingFormState } from './form-state';
+import { requireUser } from './require-auth';
 import type { SacramentMeeting } from './types';
 
 const hymnNumber = z.coerce
@@ -127,6 +128,8 @@ export async function createMeeting(
   _prevState: MeetingFormState,
   formData: FormData
 ): Promise<MeetingFormState> {
+  await requireUser();
+
   const parsed = MeetingFormSchema.safeParse(readForm(formData));
 
   if (!parsed.success) {
@@ -152,6 +155,8 @@ export async function updateMeeting(
   _prevState: MeetingFormState,
   formData: FormData
 ): Promise<MeetingFormState> {
+  await requireUser();
+
   const parsed = MeetingFormSchema.safeParse(readForm(formData));
 
   if (!parsed.success) {
@@ -179,6 +184,8 @@ export async function updateMeeting(
 }
 
 export async function deleteMeeting(formData: FormData): Promise<void> {
+  await requireUser();
+
   const id = Number(formData.get('id'));
 
   if (!Number.isInteger(id) || id <= 0) {

@@ -1,11 +1,23 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import MeetingCard from '@/components/MeetingCard';
 import MeetingSearch from '@/components/MeetingSearch';
 import Pagination from '@/components/Pagination';
 import { getMeetings, getMeetingsTotalPages } from '@/lib/meetings-db';
+import { auth } from '@/auth';
 
 export const metadata: Metadata = {
   title: 'All Meetings',
+  description:
+    'Browse every sacrament meeting on file. Search by speaker, presiding or conducting leader, or meeting type, five programs per page.',
+  alternates: { canonical: '/meetings' },
+  openGraph: {
+    title: 'All Meetings | Sacrament Meeting Planner',
+    description:
+      'Browse and search every sacrament meeting agenda, including hymns, prayers, speakers, and ward business.',
+    url: '/meetings',
+    type: 'website',
+  },
 };
 
 interface MeetingsPageProps {
@@ -17,10 +29,12 @@ export default async function MeetingsPage(props: MeetingsPageProps) {
   const query = searchParams?.query ?? '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const [meetings, totalPages] = await Promise.all([
+  const [meetings, totalPages, session] = await Promise.all([
     getMeetings(query, currentPage),
     getMeetingsTotalPages(query),
+    auth(),
   ]);
+  const canManage = Boolean(session?.user);
 
   return (
     <main id="main-content">
@@ -46,10 +60,21 @@ export default async function MeetingsPage(props: MeetingsPageProps) {
         <ul className="grid gap-4 md:grid-cols-2">
           {meetings.map((meeting) => (
             <li key={meeting.id}>
-              <MeetingCard meeting={meeting} />
+              <MeetingCard meeting={meeting} canManage={canManage} />
             </li>
           ))}
         </ul>
+      )}
+
+      {canManage && (
+        <p className="mt-6">
+          <Link
+            href="/meetings/new"
+            className="rounded-md bg-sky-800 px-5 py-2.5 font-semibold text-white hover:bg-sky-900"
+          >
+            Create meeting
+          </Link>
+        </p>
       )}
 
       <Pagination totalPages={totalPages} />
