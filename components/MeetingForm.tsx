@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { emptyMeetingFormState, type MeetingFormState } from '@/lib/form-state';
 import { MEETING_TYPE_LABELS } from '@/lib/types';
+import DateAvailability from './DateAvailability';
 import type { MeetingType, SacramentMeeting } from '@/lib/types';
 
 const SPEAKER_ROWS = 4;
@@ -40,6 +41,7 @@ export default function MeetingForm({
   cancelHref,
 }: MeetingFormProps) {
   const [state, formAction, isPending] = useActionState(action, emptyMeetingFormState);
+  const [date, setDate] = useState(meeting?.date ?? '');
   const errors = state.errors;
 
   const invalid = (field: string) => (errors[field]?.length ? true : undefined);
@@ -69,10 +71,14 @@ export default function MeetingForm({
               name="date"
               type="date"
               defaultValue={meeting?.date}
-              aria-describedby="date-error"
+              onChange={(event) => setDate(event.target.value)}
+              aria-describedby="date-error date-availability"
               aria-invalid={invalid('date')}
               className={inputClasses}
             />
+            <div id="date-availability">
+              <DateAvailability date={date} excludeId={meeting?.id} />
+            </div>
             <FieldError id="date-error" errors={errors.date} />
           </div>
 
