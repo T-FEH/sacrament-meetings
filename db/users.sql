@@ -2,11 +2,19 @@
 -- Passwords are stored as bcrypt hashes, never in plain text.
 
 CREATE TABLE IF NOT EXISTS users (
-  id       SERIAL       PRIMARY KEY,
-  name     VARCHAR(255) NOT NULL,
-  email    VARCHAR(255) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL
+  id         SERIAL       PRIMARY KEY,
+  name       VARCHAR(255) NOT NULL,
+  email      VARCHAR(255) NOT NULL UNIQUE,
+  password   VARCHAR(255) NOT NULL,
+  -- Soft delete: deactivated accounts keep their row (so meeting history and
+  -- the unique email stay intact) but can no longer sign in.
+  is_active  BOOLEAN      NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
+
+-- Safe to re-run against an existing table.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active  BOOLEAN     NOT NULL DEFAULT true;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now();
 
 -- Demo bishopric account.
 -- Email:    bishop@maplehills.test

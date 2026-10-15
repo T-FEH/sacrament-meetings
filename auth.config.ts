@@ -26,7 +26,7 @@ export const authConfig = {
         return isLoggedIn;
       }
 
-      if (nextUrl.pathname === '/login' && isLoggedIn) {
+      if ((nextUrl.pathname === '/login' || nextUrl.pathname === '/signup') && isLoggedIn) {
         return Response.redirect(new URL('/meetings', nextUrl));
       }
 
