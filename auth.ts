@@ -10,8 +10,42 @@ const CredentialsSchema = z.object({
   password: z.string().min(1),
 });
 
-export const { auth, signIn, signOut, handlers } = NextAuth({
+export const {
+  auth,
+  signIn,
+  signOut,
+  handlers,
+  unstable_update: updateSession,
+} = NextAuth({
   ...authConfig,
+  callbacks: {
+    ...authConfig.callbacks,
+    /**
+     * Sessions are JWTs minted at sign-in, so a later profile change is
+     * invisible until the token is refreshed. The `update` trigger lets
+     * updateProfile push the new name and email into the existing token
+     * instead of forcing the user to sign out and back in.
+     */
+    async jwt({ token, user, trigger, session }) {
+      if (user) {
+        token.name = user.name;
+        token.email = user.email;
+      }
+
+      if (trigger === 'update' && session && typeof session === 'object') {
+        const next = (session as { user?: { name?: string; email?: string } }).user;
+        if (next?.name) token.name = next.name;
+        if (next?.email) token.email = next.email;
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.name) session.user.name = token.name;
+      if (token.email) session.user.email = token.email;
+      return session;
+    },
+  },
   providers: [
     Credentials({
       async authorize(credentials) {

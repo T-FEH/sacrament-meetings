@@ -37,10 +37,13 @@ export default async function Header({ wardName = 'Maple Hills Ward' }: HeaderPr
 
           {session?.user ? (
             <div className="flex items-center gap-3">
-              <p className="text-sm text-slate-200">
+              <Link
+                href="/profile"
+                className="text-sm text-slate-200 underline-offset-2 hover:text-white hover:underline"
+              >
                 <span className="sr-only">Signed in as </span>
                 {session.user.name ?? session.user.email}
-              </p>
+              </Link>
               <SignOutButton />
             </div>
           ) : (
