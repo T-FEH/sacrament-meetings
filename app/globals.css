@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Shared design tokens for the planner. */
 :root {
@@ -62,6 +62,6 @@ body {
   }
 
   a[href]::after {
-    content: "";
+    content: '';
   }
 }

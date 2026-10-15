@@ -52,7 +52,7 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
   return (
     <article className="rounded-lg border border-slate-300 bg-white p-6 shadow-sm print:border-0 print:shadow-none">
       <header className="mb-6 border-b border-slate-300 pb-4">
-        <p className="text-sm font-semibold uppercase tracking-wide text-sky-800">
+        <p className="text-sm font-semibold tracking-wide text-sky-800 uppercase">
           {MEETING_TYPE_LABELS[meeting.meetingType]}
         </p>
         <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -103,9 +103,7 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
             )}
           </AgendaRow>
 
-          <AgendaRow label="Stake Business">
-            {meeting.stakeBusiness ? 'Yes' : 'No'}
-          </AgendaRow>
+          <AgendaRow label="Stake Business">{meeting.stakeBusiness ? 'Yes' : 'No'}</AgendaRow>
 
           {showsSacrament && (
             <AgendaRow label="Sacrament Hymn">

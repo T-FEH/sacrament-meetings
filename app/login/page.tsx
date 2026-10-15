@@ -30,7 +30,8 @@ async function resolveCallbackUrl(requested?: string): Promise<string> {
   const headerList = await headers();
   const host = headerList.get('x-forwarded-host') ?? headerList.get('host');
   if (!host) return fallback;
-  const protocol = headerList.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
+  const protocol =
+    headerList.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
   const origin = `${protocol}://${host}`;
 
   try {
