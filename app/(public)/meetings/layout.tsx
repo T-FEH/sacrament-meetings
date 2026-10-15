@@ -4,7 +4,7 @@ export default function MeetingsLayout({ children }: { children: React.ReactNode
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <nav aria-label="Breadcrumb" className="mb-4 text-sm print:hidden">
-        <ol className="flex flex-wrap items-center gap-2 text-slate-600">
+        <ol className="flex flex-wrap items-center gap-2 text-slate-700">
           <li>
             <Link href="/" className="hover:underline">
               Home

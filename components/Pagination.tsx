@@ -25,7 +25,7 @@ export default function Pagination({ totalPages }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const linkClasses =
-    'rounded-md border border-slate-400 bg-white px-4 py-2 text-sm font-semibold text-sky-800 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800';
+    'rounded-md border border-slate-400 bg-white px-4 py-2 text-sm font-semibold text-sky-900 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800';
 
   return (
     <nav aria-label="Pagination" className="mt-8 flex items-center justify-between gap-4">

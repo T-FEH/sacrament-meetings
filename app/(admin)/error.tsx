@@ -26,7 +26,7 @@ export default function AdminError({
       <p className="mt-2 text-slate-700">
         {error.message || 'The meeting information could not be loaded.'}
       </p>
-      {error.digest && <p className="mt-1 text-sm text-slate-600">Reference: {error.digest}</p>}
+      {error.digest && <p className="mt-1 text-sm text-slate-700">Reference: {error.digest}</p>}
 
       <div className="mt-6 flex flex-wrap gap-3">
         <button

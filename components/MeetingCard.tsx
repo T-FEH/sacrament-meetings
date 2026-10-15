@@ -51,7 +51,7 @@ export default function MeetingCard({ meeting, canManage = false }: MeetingCardP
         </div>
       </dl>
 
-      <p className="mt-3 text-sm text-slate-600">
+      <p className="mt-3 text-sm text-slate-700">
         {speakerCount} {speakerCount === 1 ? 'speaker' : 'speakers'}
         {musicalCount > 0 &&
           `, ${musicalCount} musical ${musicalCount === 1 ? 'number' : 'numbers'}`}
@@ -61,7 +61,7 @@ export default function MeetingCard({ meeting, canManage = false }: MeetingCardP
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Link
           href={`/meetings/${meeting.id}`}
-          className="text-sm font-semibold text-sky-800 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
+          className="text-sm font-semibold text-sky-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
         >
           View agenda
           <span className="sr-only"> for {formatShortDate(meeting.date)}</span>
