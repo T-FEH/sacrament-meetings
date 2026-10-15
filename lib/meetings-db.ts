@@ -130,7 +130,9 @@ export async function getMeetingsByDate(date: string): Promise<SacramentMeeting[
 /** A single meeting by id, or null when no row matches. */
 export async function getMeetingById(id: number): Promise<SacramentMeeting | null> {
   const rows = await queryRows<SacramentMeeting>(
-    `SELECT ${MEETING_COLUMNS} FROM meetings WHERE id = $1`, [id]);
+    `SELECT ${MEETING_COLUMNS} FROM meetings WHERE id = $1`,
+    [id]
+  );
 
   return rows[0] ?? null;
 }

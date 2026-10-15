@@ -52,7 +52,10 @@ export default function LoginForm({ callbackUrl }: LoginFormProps) {
 
       <div id="login-error" aria-live="polite" className="min-h-6">
         {errorMessage && (
-          <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm font-semibold text-red-900">
+          <p
+            role="alert"
+            className="rounded-md bg-red-50 px-3 py-2 text-sm font-semibold text-red-900"
+          >
             {errorMessage}
           </p>
         )}

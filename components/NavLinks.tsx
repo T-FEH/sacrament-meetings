@@ -26,7 +26,9 @@ export default function NavLinks({ links, className = '' }: NavLinksProps) {
     <ul className={`flex flex-wrap items-center gap-2 ${className}`}>
       {links.map((link) => {
         const isActive =
-          link.href === '/' ? pathname === '/' : pathname === link.href || pathname.startsWith(`${link.href}/`);
+          link.href === '/'
+            ? pathname === '/'
+            : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
         return (
           <li key={link.href}>

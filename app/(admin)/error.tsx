@@ -17,7 +17,7 @@ export default function AdminError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Admin route error:", error);
+    console.error('Admin route error:', error);
   }, [error]);
 
   return (

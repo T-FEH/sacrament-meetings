@@ -47,12 +47,24 @@ export default function HomePage() {
         </h2>
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { title: 'Announcements', body: 'Ward and stake notices read at the start of the meeting.' },
-            { title: 'Hymns', body: 'Opening, sacrament, and closing hymns with hymnbook numbers.' },
+            {
+              title: 'Announcements',
+              body: 'Ward and stake notices read at the start of the meeting.',
+            },
+            {
+              title: 'Hymns',
+              body: 'Opening, sacrament, and closing hymns with hymnbook numbers.',
+            },
             { title: 'Prayers', body: 'Members invited to offer the opening and closing prayers.' },
-            { title: 'Ward business', body: 'Sustainings, releases, and confirmations, plus stake business.' },
+            {
+              title: 'Ward business',
+              body: 'Sustainings, releases, and confirmations, plus stake business.',
+            },
             { title: 'Speakers', body: 'Assigned speakers and their topics, in program order.' },
-            { title: 'Musical numbers', body: 'Choir and special musical selections between speakers.' },
+            {
+              title: 'Musical numbers',
+              body: 'Choir and special musical selections between speakers.',
+            },
           ].map((feature) => (
             <li
               key={feature.title}

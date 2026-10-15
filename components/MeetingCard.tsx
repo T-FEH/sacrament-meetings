@@ -33,7 +33,9 @@ export default function MeetingCard({ meeting, canManage = false }: MeetingCardP
             <time dateTime={meeting.date}>{formatShortDate(meeting.date)}</time>
           </Link>
         </h2>
-        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${TYPE_BADGE[meeting.meetingType]}`}>
+        <span
+          className={`rounded-full px-2.5 py-1 text-xs font-semibold ${TYPE_BADGE[meeting.meetingType]}`}
+        >
           {MEETING_TYPE_LABELS[meeting.meetingType]}
         </span>
       </div>
@@ -51,7 +53,8 @@ export default function MeetingCard({ meeting, canManage = false }: MeetingCardP
 
       <p className="mt-3 text-sm text-slate-600">
         {speakerCount} {speakerCount === 1 ? 'speaker' : 'speakers'}
-        {musicalCount > 0 && `, ${musicalCount} musical ${musicalCount === 1 ? 'number' : 'numbers'}`}
+        {musicalCount > 0 &&
+          `, ${musicalCount} musical ${musicalCount === 1 ? 'number' : 'numbers'}`}
         {meeting.stakeBusiness && ' · Stake business'}
       </p>
 
