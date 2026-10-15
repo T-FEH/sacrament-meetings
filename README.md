@@ -3,6 +3,34 @@
 A Next.js (App Router) application for planning, reviewing, and printing sacrament
 meeting agendas, backed by a live PostgreSQL (Neon) database. Built for WDD 430.
 
+
+## Team — Group 4
+
+| Member | Role on this project |
+| --- | --- |
+| Michael Kyne | Developer |
+| Armando Fernandez | Developer |
+| Boluwatife Alewi ([@T-FEH](https://github.com/T-FEH)) | Developer — this repository |
+| Ifeanyi Eme ([@KhiddleCodes](https://github.com/KhiddleCodes)) | Developer |
+
+Each member maintains their own copy of the planner; this repository is
+Boluwatife Alewi's implementation.
+
+## Live Application
+
+- **Production:** https://sacrament-meetings-khaki.vercel.app
+- **Repository:** https://github.com/T-FEH/sacrament-meetings
+
+### Demo credentials
+
+| Field | Value |
+| --- | --- |
+| Email | `bishop@maplehills.test` |
+| Password | `Sacrament2026!` |
+
+Authentication uses **Auth.js v5** (`next-auth@beta`) with a credentials
+provider. You can also register a new account at `/signup`.
+
 ## Features
 
 - Browse every meeting on file, newest first, five per page
@@ -74,17 +102,85 @@ three pages at five per page and enough variety to exercise search.
 
 ## Routes
 
-| Route | Description |
-|---|---|
-| `/` | Landing page with hero image and feature summary |
-| `/meetings` | Paginated, searchable list (`?query=`, `?page=`) |
-| `/meetings/new` | **Protected.** Create form (Server Action + Zod validation) |
-| `/meetings/[id]/edit` | **Protected.** Edit form; `notFound()` for unknown ids |
-| `/login` | Bishopric sign-in |
-| `/meetings/[id]` | Full agenda for one meeting, with print control |
-| `/meetings/current` | 307 redirect to the most recent Sunday's meeting |
-| `GET /api/meetings` | All meetings; `?date=`, `?query=`, `?page=` filters |
-| `GET /api/meetings/[id]` | One meeting — `200`, `400` (bad id), or `404` (missing) |
+### Pages
+
+| Route | Auth | Description |
+| --- | --- | --- |
+| `/` | public | Landing page with hero image and feature summary |
+| `/meetings` | public | Paginated, searchable list (`?query=`, `?page=`) |
+| `/meetings/[id]` | public | Full agenda with print view |
+| `/meetings/current` | public | 307 redirect to the most recent Sunday's meeting |
+| `/meetings/new` | **protected** | Create a meeting |
+| `/meetings/[id]/edit` | **protected** | Edit a meeting |
+| `/profile` | **protected** | View, update, or deactivate your account |
+| `/login` | public | Bishopric sign-in |
+| `/signup` | public | Register a bishopric account |
+
+### API
+
+All handlers live in `app/api/` and return JSON. Every query is parameterised.
+
+#### `GET /api/meetings`
+
+Returns an array of meetings, newest first.
+
+| Query param | Type | Description |
+| --- | --- | --- |
+| `date` | `YYYY-MM-DD` | Only meetings on this exact date |
+| `query` | string | Matches presiding, conducting, meeting type, or speaker names (case-insensitive) |
+| `page` | integer | Page number, 5 per page. Omit to return every match |
+
+```bash
+curl https://sacrament-meetings-khaki.vercel.app/api/meetings
+curl "https://sacrament-meetings-khaki.vercel.app/api/meetings?date=2026-10-11"
+curl "https://sacrament-meetings-khaki.vercel.app/api/meetings?query=smith&page=2"
+```
+
+Response `200`:
+
+```json
+[
+  {
+    "id": 19,
+    "date": "2026-10-11",
+    "meetingType": "regular",
+    "presiding": "Bishop Smith",
+    "conducting": "Sister Torres",
+    "announcements": ["Ward temple night Thursday at 6:30 PM"],
+    "openingHymn": { "number": 2, "title": "The Spirit of God" },
+    "openingPrayer": "Brother Kim",
+    "wardBusiness": [{ "description": "Sustaining of Sister Agbavor" }],
+    "stakeBusiness": false,
+    "sacramentHymn": { "number": 169, "title": "In Remembrance of Thy Suffering" },
+    "speakers": [{ "name": "Sister Chen", "topic": "Walking by Faith", "type": "speaker" }],
+    "closingHymn": { "number": 223, "title": "Have I Done Any Good?" },
+    "closingPrayer": "Sister Jensen"
+  }
+]
+```
+
+This endpoint is consumed by `components/DateAvailability.tsx`, a client
+component that checks whether a date is already scheduled while a leader fills
+in the meeting form — a full client → route handler → database round trip.
+
+#### `GET /api/meetings/[id]`
+
+| Status | Meaning |
+| --- | --- |
+| `200` | The meeting, as a single object |
+| `400` | `id` is not a positive integer — `{"error":"Invalid meeting id 'abc'…"}` |
+| `404` | No meeting with that id — `{"error":"No meeting found with id 9999."}` |
+
+#### `GET|POST /api/auth/[...nextauth]`
+
+Auth.js session, sign-in, and sign-out handlers. Not called directly.
+
+### Mutations
+
+Create, update, and delete run as **Server Actions** (`lib/actions.ts`,
+`lib/account-actions.ts`), not REST endpoints. Each one re-checks the session
+server-side via `requireUser()` — middleware alone does not protect Server
+Actions, because an action is a POST to whichever route rendered it.
 
 ## Project Structure
 
@@ -210,11 +306,78 @@ a description from the actual meeting — its type, date, presiding leader, and
 speaker names — and sets `og:type` to `article`. `/login` is marked
 `robots: { index: false }` since there is nothing for search engines there.
 
+## Deployment
+
+Hosted on Vercel with a Neon (serverless PostgreSQL) database.
+
+### Required environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Neon connection string. Added automatically by the Vercel Neon integration |
+| `AUTH_SECRET` | Signs Auth.js session JWTs. Generate with `openssl rand -base64 32` |
+
+Set both in **Vercel → Project → Settings → Environment Variables** for
+Production and Preview. Locally, run `vercel env pull .env.local --environment=production`
+(the development environment has no values, so pulling without the flag returns
+an empty `DATABASE_URL`). `.env.local` is gitignored and must never be committed.
+
+### First-time database setup
+
+```bash
+psql "$DATABASE_URL" -f db/schema.sql
+psql "$DATABASE_URL" -f db/seed.sql
+psql "$DATABASE_URL" -f db/users.sql
+```
+
+### Deploying
+
+```bash
+vercel deploy --prod
+```
+
+> The Vercel GitHub App is **not** connected to this repository, so pushing to
+> `main` does not trigger a build. Deployments are run manually with the command
+> above. Connecting GitHub in Vercel → Settings → Git would enable automatic
+> deployments and per-branch previews.
+
+## Known Issues and Opportunities
+
+### Known issues
+
+- **Dates are computed in the server's timezone (UTC on Vercel).** A ward
+  several hours behind UTC will see "today" and "the current Sunday" roll over
+  before local midnight. A proper fix stores a ward timezone and resolves dates
+  against it.
+- **Every authenticated user is a full administrator.** There is one role: if
+  you can sign in, you can create, edit, and delete any meeting, and anyone can
+  self-register at `/signup`. A real deployment needs an invite flow and
+  separate bishopric/clerk roles.
+- **Deactivation is self-service only.** A user can deactivate their own
+  account, but there is no admin screen to reactivate one; that currently needs
+  a SQL update.
+- **The app is single-ward.** Ward name is a prop default on `Header`, and
+  meetings are not scoped to an organisation.
+- **Deleting a meeting has no undo.** Meetings are hard-deleted, unlike user
+  accounts, which are soft-deleted.
+- **The meeting form caps speakers at four rows.** Longer programs need more
+  rows added dynamically.
+
+### Opportunities
+
+- Roles and permissions, plus an invite-based sign-up
+- Per-ward tenancy so several wards can share one deployment
+- Soft delete and an undo window for meetings
+- Email or text reminders to assigned speakers and prayer-givers
+- A printable quarterly view rather than one program at a time
+- Automated tests; verification is currently manual plus scripted browser checks
+
 ## Quality Checks
 
 ```bash
-npm run lint
-npm run build
+npm run lint          # ESLint
+npm run format:check  # Prettier
+npm run build         # production build
 ```
 
 Accessibility was verified with axe-core in headless Chrome across `/`,
