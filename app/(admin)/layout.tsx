@@ -20,12 +20,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <nav aria-label="Admin" className="mb-6 text-sm">
         <ul className="flex flex-wrap gap-4">
           <li>
-            <Link href="/meetings" className="text-sky-800 hover:underline">
+            <Link href="/meetings" className="text-sky-900 hover:underline">
               Back to meetings
             </Link>
           </li>
           <li>
-            <Link href="/meetings/new" className="text-sky-800 hover:underline">
+            <Link href="/meetings/new" className="text-sky-900 hover:underline">
               Create meeting
             </Link>
           </li>

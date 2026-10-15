@@ -10,7 +10,7 @@ function HymnLine({ hymn }: { hymn: Hymn }) {
   return (
     <span>
       {hymn.title}
-      <span className="text-slate-600"> (no. {hymn.number})</span>
+      <span className="text-slate-700"> (no. {hymn.number})</span>
     </span>
   );
 }
@@ -26,7 +26,7 @@ function AgendaRow({ label, children }: { label: string; children: React.ReactNo
 
 function ProgramItems({ items }: { items: SpeakerItem[] }) {
   if (items.length === 0) {
-    return <p className="text-slate-600">Open time for the bearing of testimonies.</p>;
+    return <p className="text-slate-700">Open time for the bearing of testimonies.</p>;
   }
 
   return (
@@ -39,7 +39,7 @@ function ProgramItems({ items }: { items: SpeakerItem[] }) {
               Musical number
             </span>
           )}
-          {item.topic && <span className="block text-sm text-slate-600">{item.topic}</span>}
+          {item.topic && <span className="block text-sm text-slate-700">{item.topic}</span>}
         </li>
       ))}
     </ol>
@@ -52,7 +52,7 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
   return (
     <article className="rounded-lg border border-slate-300 bg-white p-6 shadow-sm print:border-0 print:shadow-none">
       <header className="mb-6 border-b border-slate-300 pb-4">
-        <p className="text-sm font-semibold tracking-wide text-sky-800 uppercase">
+        <p className="text-sm font-semibold tracking-wide text-sky-900 uppercase">
           {MEETING_TYPE_LABELS[meeting.meetingType]}
         </p>
         <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -99,7 +99,7 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
                 ))}
               </ul>
             ) : (
-              <span className="text-slate-600">None</span>
+              <span className="text-slate-700">None</span>
             )}
           </AgendaRow>
 

@@ -53,7 +53,7 @@ export default async function ProfilePage() {
       </section>
 
       <p className="mt-8 text-sm">
-        <Link href="/meetings" className="font-semibold text-sky-800 hover:underline">
+        <Link href="/meetings" className="font-semibold text-sky-900 hover:underline">
           <span aria-hidden="true">&larr; </span>Back to all meetings
         </Link>
       </p>

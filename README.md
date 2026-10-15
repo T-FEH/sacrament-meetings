@@ -341,6 +341,46 @@ vercel deploy --prod
 > above. Connecting GitHub in Vercel → Settings → Git would enable automatic
 > deployments and per-branch previews.
 
+## Design System
+
+| Token | Value | Use |
+| --- | --- | --- |
+| Background | `#f1f5f9` | Page ground |
+| Surface | `#ffffff` | Cards, forms, panels |
+| Foreground | `#0f172a` | Body text |
+| Accent | `#075985` | Links, primary buttons, focus rings |
+| Border | `#cbd5e1` | Card and input borders |
+
+Type pairs Playfair Display (headings) with Source Sans 3 (body), both loaded
+through `next/font/google`. Spacing, radii, and shadows come from Tailwind's
+scale, and every interactive element shares one focus-ring treatment.
+
+### Accessibility and Lighthouse
+
+Verified on the production deployment with Lighthouse (mobile) and axe-core:
+
+| Page | Performance | Accessibility | Best Practices | SEO |
+| --- | --- | --- | --- | --- |
+| `/` | 87 | 100 | 100 | 100 |
+| `/meetings` | 94 | 100 | 100 | 100 |
+
+**Strongest:** Accessibility, Best Practices, and SEO all score 100 — semantic
+landmarks, labelled controls, logical heading order, and complete metadata.
+**Weakest:** Performance, where the landing page's 87 comes almost entirely from
+unused JavaScript in the Next.js client runtime (~28 KiB) plus the hero image;
+the data-driven `/meetings` page scores 94.
+
+Colour contrast was checked with axe at **both WCAG AA and AAA** across `/`,
+`/meetings`, `/meetings/[id]`, `/login`, `/signup`, `/profile`, `/meetings/new`,
+and `/meetings/[id]/edit`, signed out and signed in: **0 violations at either
+level**. Link and muted-text colours were darkened specifically to clear the
+AAA 7:1 threshold.
+
+Keyboard support was verified end to end: a skip link, logical tab order,
+visible focus rings on every control, Enter activation, and `aria-current` on
+the active navigation link. Form errors use `aria-describedby`, `aria-invalid`,
+and `aria-live="polite"` regions.
+
 ## Known Issues and Opportunities
 
 ### Known issues

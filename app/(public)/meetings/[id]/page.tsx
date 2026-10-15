@@ -64,7 +64,7 @@ export default async function MeetingPage({ params }: MeetingPageProps) {
   return (
     <main id="main-content">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <Link href="/meetings" className="text-sm font-semibold text-sky-800 hover:underline">
+        <Link href="/meetings" className="text-sm font-semibold text-sky-900 hover:underline">
           <span aria-hidden="true">&larr; </span>Back to all meetings
         </Link>
         <div className="flex items-center gap-3">

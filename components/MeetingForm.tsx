@@ -32,7 +32,7 @@ function FieldError({ id, errors }: { id: string; errors?: string[] }) {
 
 const labelClasses = 'mb-1 block text-sm font-semibold text-slate-900';
 const inputClasses =
-  'w-full rounded-md border border-slate-400 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800 aria-[invalid=true]:border-red-700';
+  'w-full rounded-md border border-slate-400 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-800 aria-[invalid=true]:border-red-700';
 
 export default function MeetingForm({
   action,

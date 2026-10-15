@@ -66,10 +66,10 @@ export default function DateAvailability({ date, excludeId }: DateAvailabilityPr
 
   return (
     <div aria-live="polite" className="min-h-5 text-sm">
-      {status.kind === 'checking' && <p className="text-slate-600">Checking that date…</p>}
+      {status.kind === 'checking' && <p className="text-slate-700">Checking that date…</p>}
 
       {status.kind === 'free' && (
-        <p className="font-medium text-emerald-800">That Sunday is free.</p>
+        <p className="font-medium text-emerald-900">That Sunday is free.</p>
       )}
 
       {status.kind === 'taken' && (
@@ -77,7 +77,7 @@ export default function DateAvailability({ date, excludeId }: DateAvailabilityPr
           A meeting is already scheduled for this date.{' '}
           <Link
             href={`/meetings/${status.meeting.id}`}
-            className="font-semibold text-sky-800 underline"
+            className="font-semibold text-sky-900 underline"
           >
             View it
           </Link>

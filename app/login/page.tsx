@@ -70,13 +70,13 @@ export default async function LoginPage(props: LoginPageProps) {
 
       <p className="mt-6 text-sm text-slate-700">
         Need an account?{' '}
-        <Link href="/signup" className="font-semibold text-sky-800 hover:underline">
+        <Link href="/signup" className="font-semibold text-sky-900 hover:underline">
           Create one
         </Link>
       </p>
 
       <p className="mt-4 text-sm">
-        <Link href="/meetings" className="font-semibold text-sky-800 hover:underline">
+        <Link href="/meetings" className="font-semibold text-sky-900 hover:underline">
           <span aria-hidden="true">&larr; </span>Back to all meetings
         </Link>
       </p>
